@@ -7,8 +7,7 @@
 > **Статус:** portable Linux desktop application  
 > **Интерфейс:** HTML/CSS/JavaScript  
 > **Desktop shell:** GTK3 + WebKit2GTK  
-> **Платформа:** Linux x86_64  
-> **Лицензия:** добавьте выбранную вами лицензию
+> **Платформа:** Linux x86_64
 
 ---
 
