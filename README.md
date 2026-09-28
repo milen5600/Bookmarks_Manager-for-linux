@@ -419,6 +419,13 @@ This keeps the application relatively simple and easy to maintain.
 - More advanced link checking.
 - Automatic backups.
 - Additional interface preferences.
+---
+
+| Език | Язык| Language|
+| :--: | :--: | :--: |
+|   Български   | Болгарский    |    Bulgarian  |
+|  Руски    |  Русский    |    Russian  |
+|   Английски   |   Английски   |    English  |
 
 ---
 
