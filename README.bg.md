@@ -437,6 +437,7 @@ HTML + CSS + JavaScript
 > Add screenshots here.
 ![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_001.png)
 ![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_002.png)
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_003.png)
 
 
 ---
