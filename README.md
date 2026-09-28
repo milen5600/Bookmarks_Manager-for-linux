@@ -1,4 +1,4 @@
-# Bookmark Manager
+# Web Bookmark Manager for linux
 
 A lightweight, portable graphical bookmark manager for Linux, inspired by the **Bookmark Library / Bookmark Manager** window of Mozilla Firefox.
 
