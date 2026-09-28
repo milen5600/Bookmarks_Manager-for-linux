@@ -421,29 +421,12 @@ HTML + CSS + JavaScript
 
 ---
 
-## License
-
-Добавьте выбранную лицензию.
-
-Например:
-
-```text
-MIT License
-```
-
----
-
 ## Screenshots
 
-> Добавьте screenshots здесь.
+> Add screenshots here.
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_001.png)
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_002.png)
 
-<!-- screenshot: main window -->
-
-<!-- screenshot: tree view -->
-
-<!-- screenshot: drag and drop -->
-
-<!-- screenshot: dark/light theme -->
 
 ---
 
