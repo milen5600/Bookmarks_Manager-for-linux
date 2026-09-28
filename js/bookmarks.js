@@ -4,30 +4,302 @@
 // теми, проверка на линкове, импорт/експорт.
 // Данните: localStorage (WEBKIT_USER_DATA_DIR в профила).
 // ============================================================
-(function () {
+(function() {
 	'use strict';
-
 	const STORAGE_KEY = 'bm_data_v1';
 	const STATE_KEY = 'bm_state_v1';
-
-	const THEMES = [
-		{ id: 'dark', label: 'Тъмна (по подразбиране)', icon: '🌙', swatch: '#172332' },
-		{ id: 'light', label: 'Светла (по подразбиране)', icon: '☀️', swatch: '#f4f6fa' },
-		{ id: 'github-dark', label: 'GitHub тъмна', icon: '🐙', swatch: '#0d1117' },
-		{ id: 'github-light', label: 'GitHub светла', icon: '🐙', swatch: '#f6f8fa' },
-		{ id: 'solarized-dark', label: 'Solarized тъмна', icon: '🔆', swatch: '#002b36' },
-		{ id: 'solarized-light', label: 'Solarized светла', icon: '🔆', swatch: '#fdf6e3' },
-		{ id: 'vscode-dark', label: 'VS Code тъмна', icon: '💻', swatch: '#1e1e1e' },
-		{ id: 'vscode-light', label: 'VS Code светла', icon: '💻', swatch: '#f3f3f3' },
-	];
-
+	const I18N = {
+		bg: {
+			btnNewFolder: '📁+ Папка',
+			btnNewFolderTitle: 'Нова папка (в текущата папка)',
+			btnNewBookmark: '🔖+ Отметка',
+			btnNewBookmarkTitle: 'Нова отметка (в текущата папка)',
+			btnRename: '✎ Преименувай',
+			btnRenameTitle: 'Преименувай избраното',
+			btnDelete: '🗑 Изтрий',
+			btnDeleteTitle: 'Изтрий избраното',
+			btnImport: '⭳ Импорт',
+			btnImportTitle: 'Импорт на bookmarks.html или .json',
+			btnExport: '⭱ Експорт',
+			btnExportTitle: 'Експорт на избраната папка',
+			btnExportAll: '⭱⭱ Всички',
+			btnExportAllTitle: 'Експорт на всички папки',
+			searchPlaceholder: 'Търсене в отметките…',
+			colName: 'Име',
+			colUrl: 'Адрес',
+			colDate: 'Добавено',
+			emptyState: 'Няма елементи в тази папка.',
+			emptySearch: 'Няма намерени резултати.',
+			statusResults: 'Намерени резултати: ',
+			statusFolder: ' — {0} отметки, {1} папки',
+			modalNewFolder: 'Нова папка',
+			modalNewFolderLabel: 'Име на папката',
+			modalNewFolderConfirm: 'Създай',
+			modalNewBookmark: 'Нова отметка',
+			modalNewBookmarkLabelTitle: 'Заглавие',
+			modalNewBookmarkLabelUrl: 'Адрес (URL)',
+			modalNewBookmarkConfirm: 'Създай',
+			modalRename: 'Преименувай',
+			modalRenameLabelName: 'Име',
+			modalRenameLabelUrl: 'Адрес (URL)',
+			modalRenameConfirm: 'Запази',
+			modalDelete: 'Изтриване',
+			modalDeleteMsg: 'Наистина ли искате да изтриете „{0}“?',
+			modalDeleteFolderMsg: ' Съдържанието на папката ще бъде изтрито заедно с нея.',
+			modalDeleteConfirm: 'Изтрий',
+			modalCancel: 'Отказ',
+			ctxNewFolder: '📁+ Нова папка',
+			ctxNewBookmark: '🔖+ Нова отметка',
+			ctxRename: '✎ Преименувай',
+			ctxDelete: '🗑 Изтрий',
+			ctxCheckLinks: '🔗 Провери линковете в папката',
+			ctxExportFolder: '⇪ Експортирай папката',
+			ctxOpen: 'Отвори',
+			ctxCopyLink: '📋 Копирай връзката',
+			ctxCheckLink: '🔗 Провери връзката',
+			statusCopied: 'Връзката е копирана.',
+			checkLinksTitle: 'Проверка на линкове',
+			checkLinksMsg: 'Проверяват се връзките. Някои сайтове блокират CORS или зареждат бавно — таймаутът е {0} с. Резултат „неясен“ означава, че заявката е минала, но статусът не може да се прочете.',
+			checkLinksWait: 'Изчакване…',
+			checkLinksProgress: 'Проверени {0} / {1}…',
+			checkLinksDone: 'Готово: {0} връзки.',
+			checkLinksNoBookmarks: 'В тази папка (и подпапките ѝ) няма отметки.',
+			checkStatusOk: 'OK',
+			checkStatusFail: 'Неработеше',
+			checkStatusTimeout: 'Таймаут',
+			checkStatusUncertain: 'Неясен (CORS/opaque)',
+			checkStatusInvalid: 'невалиден URL',
+			checkStatusNetError: 'мрежова грешка',
+			importError: 'Грешка при импорт',
+			importErrorMsg: 'Файлът не можа да бъде прочетен. ',
+			rootTitle: 'Начало',
+			defaultFolder: 'Папка',
+			defaultBookmark: 'Отметка',
+			importFolder: 'Импорт'
+		},
+		en: {
+			btnNewFolder: '📁+ Folder',
+			btnNewFolderTitle: 'New folder (in current folder)',
+			btnNewBookmark: '🔖+ Bookmark',
+			btnNewBookmarkTitle: 'New bookmark (in current folder)',
+			btnRename: '✎ Rename',
+			btnRenameTitle: 'Rename selected',
+			btnDelete: '🗑 Delete',
+			btnDeleteTitle: 'Delete selected',
+			btnImport: '⭳ Import',
+			btnImportTitle: 'Import bookmarks.html or .json',
+			btnExport: '⭱ Export',
+			btnExportTitle: 'Export selected folder',
+			btnExportAll: '⭱⭱ All',
+			btnExportAllTitle: 'Export all folders',
+			searchPlaceholder: 'Search bookmarks…',
+			colName: 'Name',
+			colUrl: 'Address',
+			colDate: 'Added',
+			emptyState: 'No items in this folder.',
+			emptySearch: 'No results found.',
+			statusResults: 'Results found: ',
+			statusFolder: ' — {0} bookmarks, {1} folders',
+			modalNewFolder: 'New Folder',
+			modalNewFolderLabel: 'Folder Name',
+			modalNewFolderConfirm: 'Create',
+			modalNewBookmark: 'New Bookmark',
+			modalNewBookmarkLabelTitle: 'Title',
+			modalNewBookmarkLabelUrl: 'Address (URL)',
+			modalNewBookmarkConfirm: 'Create',
+			modalRename: 'Rename',
+			modalRenameLabelName: 'Name',
+			modalRenameLabelUrl: 'Address (URL)',
+			modalRenameConfirm: 'Save',
+			modalDelete: 'Delete',
+			modalDeleteMsg: 'Are you sure you want to delete “{0}”?',
+			modalDeleteFolderMsg: ' The folder contents will be deleted along with it.',
+			modalDeleteConfirm: 'Delete',
+			modalCancel: 'Cancel',
+			ctxNewFolder: '📁+ New Folder',
+			ctxNewBookmark: '🔖+ New Bookmark',
+			ctxRename: '✎ Rename',
+			ctxDelete: '🗑 Delete',
+			ctxCheckLinks: '🔗 Check links in folder',
+			ctxExportFolder: '⇪ Export folder',
+			ctxOpen: 'Open',
+			ctxCopyLink: '📋 Copy link',
+			ctxCheckLink: '🔗 Check link',
+			statusCopied: 'Link copied.',
+			checkLinksTitle: 'Link Check',
+			checkLinksMsg: 'Checking links. Some sites block CORS or load slowly — timeout is {0} s. "Uncertain" result means the request went through, but the status could not be read.',
+			checkLinksWait: 'Waiting…',
+			checkLinksProgress: 'Checked {0} / {1}…',
+			checkLinksDone: 'Done: {0} links.',
+			checkLinksNoBookmarks: 'There are no bookmarks in this folder (and its subfolders).',
+			checkStatusOk: 'OK',
+			checkStatusFail: 'Failed',
+			checkStatusTimeout: 'Timeout',
+			checkStatusUncertain: 'Uncertain (CORS/opaque)',
+			checkStatusInvalid: 'invalid URL',
+			checkStatusNetError: 'network error',
+			importError: 'Import Error',
+			importErrorMsg: 'The file could not be read. ',
+			rootTitle: 'Home',
+			defaultFolder: 'Folder',
+			defaultBookmark: 'Bookmark',
+			importFolder: 'Import'
+		},
+		ru: {
+			btnNewFolder: '📁+ Папка',
+			btnNewFolderTitle: 'Новая папка (в текущей папке)',
+			btnNewBookmark: '🔖+ Закладка',
+			btnNewBookmarkTitle: 'Новая закладка (в текущей папке)',
+			btnRename: '✎ Переименовать',
+			btnRenameTitle: 'Переименовать выбранное',
+			btnDelete: '🗑 Удалить',
+			btnDeleteTitle: 'Удалить выбранное',
+			btnImport: '⭳ Импорт',
+			btnImportTitle: 'Импорт bookmarks.html или .json',
+			btnExport: '⭱ Экспорт',
+			btnExportTitle: 'Экспорт выбранной папки',
+			btnExportAll: '⭱⭱ Все',
+			btnExportAllTitle: 'Экспорт всех папок',
+			searchPlaceholder: 'Поиск по закладкам…',
+			colName: 'Имя',
+			colUrl: 'Адрес',
+			colDate: 'Добавлено',
+			emptyState: 'В этой папке нет элементов.',
+			emptySearch: 'Результаты не найдены.',
+			statusResults: 'Найдено результатов: ',
+			statusFolder: ' — {0} закладок, {1} папок',
+			modalNewFolder: 'Новая папка',
+			modalNewFolderLabel: 'Имя папки',
+			modalNewFolderConfirm: 'Создать',
+			modalNewBookmark: 'Новая закладка',
+			modalNewBookmarkLabelTitle: 'Заголовок',
+			modalNewBookmarkLabelUrl: 'Адрес (URL)',
+			modalNewBookmarkConfirm: 'Создать',
+			modalRename: 'Переименовать',
+			modalRenameLabelName: 'Имя',
+			modalRenameLabelUrl: 'Адрес (URL)',
+			modalRenameConfirm: 'Сохранить',
+			modalDelete: 'Удаление',
+			modalDeleteMsg: 'Вы действительно хотите удалить «{0}»?',
+			modalDeleteFolderMsg: ' Содержимое папки будет удалено вместе с ней.',
+			modalDeleteConfirm: 'Удалить',
+			modalCancel: 'Отмена',
+			ctxNewFolder: '📁+ Новая папка',
+			ctxNewBookmark: '🔖+ Новая закладка',
+			ctxRename: '✎ Переименовать',
+			ctxDelete: '🗑 Удалить',
+			ctxCheckLinks: '🔗 Проверить ссылки в папке',
+			ctxExportFolder: '⇪ Экспортировать папку',
+			ctxOpen: 'Открыть',
+			ctxCopyLink: '📋 Копировать ссылку',
+			ctxCheckLink: '🔗 Проверить ссылку',
+			statusCopied: 'Ссылка скопирована.',
+			checkLinksTitle: 'Проверка ссылок',
+			checkLinksMsg: 'Проверка ссылок. Некоторые сайты блокируют CORS или загружаются медленно — таймаут {0} сек. Результат «неясен» означает, что запрос прошел, но статус не удалось прочитать.',
+			checkLinksWait: 'Ожидание…',
+			checkLinksProgress: 'Проверено {0} / {1}…',
+			checkLinksDone: 'Готово: {0} ссылок.',
+			checkLinksNoBookmarks: 'В этой папке (и подпапках) нет закладок.',
+			checkStatusOk: 'ОК',
+			checkStatusFail: 'Ошибка',
+			checkStatusTimeout: 'Таймаут',
+			checkStatusUncertain: 'Неясно (CORS/opaque)',
+			checkStatusInvalid: 'некорректный URL',
+			checkStatusNetError: 'сетевая ошибка',
+			importError: 'Ошибка импорта',
+			importErrorMsg: 'Файл не удалось прочитать. ',
+			rootTitle: 'Главная',
+			defaultFolder: 'Папка',
+			defaultBookmark: 'Закладка',
+			importFolder: 'Импорт'
+		}
+	};
+	const THEMES = [{
+		id: 'dark',
+		label: 'Тъмна (по подразбиране)',
+		icon: '🌙',
+		swatch: '#172332'
+	}, {
+		id: 'light',
+		label: 'Светла (по подразбиране)',
+		icon: '☀️',
+		swatch: '#f4f6fa'
+	}, {
+		id: 'github-dark',
+		label: 'GitHub тъмна',
+		icon: '🐙',
+		swatch: '#0d1117'
+	}, {
+		id: 'github-light',
+		label: 'GitHub светла',
+		icon: '🐙',
+		swatch: '#f6f8fa'
+	}, {
+		id: 'solarized-dark',
+		label: 'Solarized тъмна',
+		icon: '🔆',
+		swatch: '#002b36'
+	}, {
+		id: 'solarized-light',
+		label: 'Solarized светла',
+		icon: '🔆',
+		swatch: '#fdf6e3'
+	}, {
+		id: 'vscode-dark',
+		label: 'VS Code тъмна',
+		icon: '💻',
+		swatch: '#1e1e1e'
+	}, {
+		id: 'vscode-light',
+		label: 'VS Code светла',
+		icon: '💻',
+		swatch: '#f3f3f3'
+	}, ];
 	const LINK_CHECK_TIMEOUT_MS = 8000;
 	const LINK_CHECK_CONCURRENCY = 4;
-
 	let root;
 	let state;
 	let dragPayload = null; // { id }
+	// ------------------------------------------------------------
+	// Localization Helpers
+	// ------------------------------------------------------------
+	function t(key, ...args) {
+		const lang = state.lang || 'bg';
+		let text = I18N[lang][key] || I18N['bg'][key] || key;
+		args.forEach((val, i) => {
+			text = text.replace(`{${i}}`, val);
+		});
+		return text;
+	}
 
+	function translateUI() {
+		// Toolbar
+		document.getElementById('btnNewFolder').textContent = t('btnNewFolder');
+		document.getElementById('btnNewFolder').title = t('btnNewFolderTitle');
+		document.getElementById('btnNewBookmark').textContent = t('btnNewBookmark');
+		document.getElementById('btnNewBookmark').title = t('btnNewBookmarkTitle');
+		document.getElementById('btnRename').textContent = t('btnRename');
+		document.getElementById('btnRename').title = t('btnRenameTitle');
+		document.getElementById('btnDelete').textContent = t('btnDelete');
+		document.getElementById('btnDelete').title = t('btnDeleteTitle');
+		document.getElementById('btnImport').textContent = t('btnImport');
+		document.getElementById('btnImport').title = t('btnImportTitle');
+		document.getElementById('btnExport').textContent = t('btnExport');
+		document.getElementById('btnExport').title = t('btnExportTitle');
+		document.getElementById('btnExportAll').textContent = t('btnExportAll');
+		document.getElementById('btnExportAll').title = t('btnExportAllTitle');
+		document.getElementById('searchInput').placeholder = t('searchPlaceholder');
+		// Table
+		document.querySelector('.col-name').textContent = t('colName');
+		document.querySelector('.col-url').textContent = t('colUrl');
+		document.querySelector('.col-date').textContent = t('colDate');
+		// Root and General
+		root.title = (root.id === 'root') ? t('rootTitle') : root.title;
+		renderTree();
+		renderBreadcrumb();
+		renderList();
+		updateStatus();
+	}
 	// ------------------------------------------------------------
 	// Helpers
 	// ------------------------------------------------------------
@@ -36,15 +308,17 @@
 	}
 
 	function defaultData() {
-		return { id: 'root', type: 'folder', title: 'Начало', dateAdded: Date.now(), children: [] };
+		return {
+			id: 'root',
+			type: 'folder',
+			title: I18N.bg.rootTitle,
+			dateAdded: Date.now(),
+			children: []
+		};
 	}
 
 	function escapeHtml(s) {
-		return String(s)
-			.replace(/&/g, '&amp;')
-			.replace(/</g, '&lt;')
-			.replace(/>/g, '&gt;')
-			.replace(/"/g, '&quot;');
+		return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 	}
 
 	function sanitizeFilename(name) {
@@ -55,7 +329,13 @@
 		if (!ts) return '';
 		try {
 			const d = new Date(ts);
-			return d.toLocaleDateString('bg-BG', { year: 'numeric', month: '2-digit', day: '2-digit' });
+			// Use dynamic locale based on state.lang
+			const locale = state.lang === 'ru' ? 'ru-RU' : (state.lang === 'en' ? 'en-US' : 'bg-BG');
+			return d.toLocaleDateString(locale, {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit'
+			});
 		} catch (e) {
 			return '';
 		}
@@ -69,10 +349,12 @@
 
 	function startDrag(e, id, element) {
 		if (!id || !e.dataTransfer) return;
-		dragPayload = { id };
-		const payload = JSON.stringify({ id });
-		// Използваме два типа данни: application/x-bookmark-manager е надеждният
-		// вътрешен формат, а text/plain пази съвместимост с браузърите/системата.
+		dragPayload = {
+			id
+		};
+		const payload = JSON.stringify({
+			id
+		});
 		e.dataTransfer.clearData();
 		e.dataTransfer.setData('application/x-bookmark-manager', payload);
 		e.dataTransfer.setData('text/plain', payload);
@@ -85,7 +367,6 @@
 		dragPayload = null;
 		clearDropIndicators();
 	}
-
 	// ------------------------------------------------------------
 	// Load / save
 	// ------------------------------------------------------------
@@ -111,18 +392,26 @@
 		state.treeWidth = state.treeWidth || 280;
 		state.searchTerm = state.searchTerm || '';
 		state.theme = state.theme || document.documentElement.getAttribute('data-theme') || 'dark';
+		state.lang = state.lang || 'bg';
 		if (!THEMES.some(t => t.id === state.theme)) state.theme = 'dark';
 		if (!findNode(state.selectedFolderId)) state.selectedFolderId = 'root';
 	}
 
 	function save() {
-		try { localStorage.setItem(STORAGE_KEY, JSON.stringify(root)); } catch (e) { /* ignore */ }
+		try {
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(root));
+		} catch (e) {
+			/* ignore */
+		}
 	}
 
 	function saveState() {
-		try { localStorage.setItem(STATE_KEY, JSON.stringify(state)); } catch (e) { /* ignore */ }
+		try {
+			localStorage.setItem(STATE_KEY, JSON.stringify(state));
+		} catch (e) {
+			/* ignore */
+		}
 	}
-
 	// ------------------------------------------------------------
 	// Tree data helpers
 	// ------------------------------------------------------------
@@ -189,16 +478,9 @@
 		})(folderNode);
 		return list;
 	}
-
 	// ------------------------------------------------------------
 	// Move / reorder
 	// ------------------------------------------------------------
-	/**
-	 * moveNode(id, targetFolderId, beforeId?)
-	 * - targetFolderId: папката, в която отива елементът
-	 * - beforeId: ако е зададен, вмъква преди този sibling; иначе append
-	 * Работи и за пренареждане в същата папка (вкл. папки).
-	 */
 	function moveNode(id, targetFolderId, beforeId) {
 		if (id === targetFolderId) return false;
 		if (beforeId && beforeId === id) return false;
@@ -206,14 +488,10 @@
 		const target = findNode(targetFolderId);
 		if (!node || !target || target.type !== 'folder') return false;
 		if (node.type === 'folder' && isDescendant(node, target)) return false;
-
 		const parent = findParent(id);
 		if (!parent) return false;
-
 		const fromIdx = parent.children.findIndex(c => c.id === id);
 		if (fromIdx < 0) return false;
-
-		// Целеви индекс ПРЕДИ премахването (ако е същата папка)
 		let insertIdx;
 		if (beforeId) {
 			insertIdx = target.children.findIndex(c => c.id === beforeId);
@@ -221,25 +499,18 @@
 		} else {
 			insertIdx = target.children.length;
 		}
-
-		// премахни от старата папка
 		parent.children.splice(fromIdx, 1);
-
-		// ако местим в същата папка и сме махнали елемент преди insertIdx — коригирай
 		if (parent.id === target.id && fromIdx < insertIdx) {
 			insertIdx -= 1;
 		}
-
 		insertIdx = Math.max(0, Math.min(insertIdx, target.children.length));
 		target.children.splice(insertIdx, 0, node);
-
 		save();
 		renderTree();
 		renderList();
 		updateStatus();
 		return true;
 	}
-
 	// ------------------------------------------------------------
 	// Render: tree
 	// ------------------------------------------------------------
@@ -253,7 +524,6 @@
 	function wireTreePaneDrop() {
 		const treePane = document.getElementById('treePane');
 		const rootUl = document.getElementById('treeRoot');
-		// drop върху празното място в дървото → root
 		treePane.addEventListener('dragover', e => {
 			if (e.target.closest('.node-row')) return;
 			e.preventDefault();
@@ -266,7 +536,6 @@
 			const data = parseDragData(e);
 			if (data && data.id) moveNode(data.id, 'root');
 		});
-		// също върху самия ul
 		rootUl.addEventListener('dragover', e => {
 			if (e.target.closest('.node-row')) return;
 			e.preventDefault();
@@ -286,39 +555,36 @@
 		li.dataset.id = node.id;
 		const expanded = !!state.expanded[node.id];
 		if (expanded) li.classList.add('expanded');
-
 		const row = document.createElement('div');
 		row.className = 'node-row';
 		if (node.id === state.selectedFolderId) row.classList.add('selected');
-
 		const subFolders = node.children.filter(c => c.type === 'folder');
 		if (subFolders.length) {
 			const chev = document.createElement('span');
 			chev.className = 'chev';
 			chev.textContent = expanded ? '▼' : '▶';
-			chev.addEventListener('click', e => { e.stopPropagation(); toggleExpand(node.id); });
+			chev.addEventListener('click', e => {
+				e.stopPropagation();
+				toggleExpand(node.id);
+			});
 			row.appendChild(chev);
 		} else {
 			const sp = document.createElement('span');
 			sp.className = 'chev-spacer';
 			row.appendChild(sp);
 		}
-
 		const icon = document.createElement('span');
 		icon.className = 'icon';
 		icon.textContent = '📁';
 		row.appendChild(icon);
-
 		const title = document.createElement('span');
 		title.className = 'title';
 		title.textContent = node.title;
 		row.appendChild(title);
-
 		const count = document.createElement('span');
 		count.className = 'count';
 		count.textContent = node.children.length ? String(node.children.length) : '';
 		row.appendChild(count);
-
 		row.addEventListener('click', () => selectFolder(node.id));
 		row.addEventListener('dblclick', () => toggleExpand(node.id));
 		row.addEventListener('contextmenu', e => {
@@ -326,10 +592,6 @@
 			selectFolder(node.id);
 			showTreeContextMenu(e, node);
 		});
-
-		// DnD — папките са пълноправни draggable елементи.
-		// Задаваме draggable и като HTML атрибут, и като property, което
-		// избягва различията между Chromium/WebKit при динамично създадени елементи.
 		row.draggable = node.id !== 'root';
 		if (node.id !== 'root') row.setAttribute('draggable', 'true');
 		row.addEventListener('dragstart', e => {
@@ -349,7 +611,6 @@
 			const rect = row.getBoundingClientRect();
 			const y = e.clientY - rect.top;
 			const h = rect.height;
-			// 40% горе = преди, 40% долу = след, 20% среда = вътре
 			if (y < h * 0.4) row.classList.add('drop-before');
 			else if (y > h * 0.6) row.classList.add('drop-after');
 			else row.classList.add('drag-over');
@@ -367,9 +628,7 @@
 			const y = e.clientY - rect.top;
 			const h = rect.height;
 			const parentOfTarget = findParent(node.id);
-
 			if (y >= h * 0.4 && y <= h * 0.6) {
-				// в тази папка
 				moveNode(data.id, node.id);
 				state.expanded[node.id] = true;
 				saveState();
@@ -378,19 +637,15 @@
 			}
 			if (!parentOfTarget) return;
 			if (y < h * 0.4) {
-				// преди тази папка (в родителя ѝ)
 				moveNode(data.id, parentOfTarget.id, node.id);
 			} else {
-				// след тази папка
 				const siblings = parentOfTarget.children;
 				const idx = siblings.findIndex(c => c.id === node.id);
 				const next = idx >= 0 && idx + 1 < siblings.length ? siblings[idx + 1].id : null;
 				moveNode(data.id, parentOfTarget.id, next);
 			}
 		});
-
 		li.appendChild(row);
-
 		if (subFolders.length) {
 			const ul = document.createElement('ul');
 			for (const sf of subFolders) ul.appendChild(renderTreeNode(sf));
@@ -402,13 +657,14 @@
 	function parseDragData(e) {
 		try {
 			const dt = e.dataTransfer;
-			const raw = (dt && dt.getData('application/x-bookmark-manager')) ||
-				(dt && dt.getData('text/plain'));
+			const raw = (dt && dt.getData('application/x-bookmark-manager')) || (dt && dt.getData('text/plain'));
 			if (raw) {
 				const data = JSON.parse(raw);
 				if (data && data.id) return data;
 			}
-		} catch (err) { /* ignore */ }
+		} catch (err) {
+			/* ignore */
+		}
 		return dragPayload;
 	}
 
@@ -430,7 +686,6 @@
 		updateStatus();
 		updateToolbarState();
 	}
-
 	// ------------------------------------------------------------
 	// Breadcrumb
 	// ------------------------------------------------------------
@@ -452,7 +707,6 @@
 			}
 		});
 	}
-
 	// ------------------------------------------------------------
 	// List
 	// ------------------------------------------------------------
@@ -461,7 +715,6 @@
 		const table = document.getElementById('listTable');
 		const empty = document.getElementById('emptyState');
 		tbody.innerHTML = '';
-
 		const searching = !!state.searchTerm;
 		let items;
 		if (searching) {
@@ -470,16 +723,14 @@
 			const folder = findNode(state.selectedFolderId);
 			items = folder ? folder.children.slice() : [];
 		}
-
 		if (!items.length) {
 			table.classList.add('hidden');
 			empty.classList.remove('hidden');
-			empty.textContent = searching ? 'Няма намерени резултати.' : 'Няма елементи в тази папка.';
+			empty.textContent = searching ? t('emptySearch') : t('emptyState');
 			return;
 		}
 		table.classList.remove('hidden');
 		empty.classList.add('hidden');
-
 		for (const item of items) tbody.appendChild(renderRow(item, searching));
 	}
 
@@ -487,7 +738,6 @@
 		const tr = document.createElement('tr');
 		tr.dataset.id = item.id;
 		if (item.id === state.selectedItemId) tr.classList.add('selected');
-
 		const tdName = document.createElement('td');
 		tdName.className = 'col-name';
 		const icon = document.createElement('span');
@@ -509,17 +759,14 @@
 			tdName.appendChild(span);
 		}
 		tr.appendChild(tdName);
-
 		const tdUrl = document.createElement('td');
 		tdUrl.className = 'col-url';
 		tdUrl.textContent = item.type === 'bookmark' ? (item.url || '') : '';
 		tr.appendChild(tdUrl);
-
 		const tdDate = document.createElement('td');
 		tdDate.className = 'col-date';
 		tdDate.textContent = formatDate(item.dateAdded);
 		tr.appendChild(tdDate);
-
 		tr.addEventListener('click', () => {
 			state.selectedItemId = item.id;
 			saveState();
@@ -540,8 +787,6 @@
 			renderList();
 			showListContextMenu(e, item);
 		});
-
-		// DnD — както линковете, така и папките могат да се преместват и подреждат.
 		tr.draggable = true;
 		tr.setAttribute('draggable', 'true');
 		tr.addEventListener('dragstart', e => {
@@ -561,8 +806,6 @@
 			const rect = tr.getBoundingClientRect();
 			const y = e.clientY - rect.top;
 			const h = rect.height;
-			// Папка: горна 40% = преди, долна 40% = след, средна 20% = вътре в папката
-			// Отметка: горна половина = преди, долна = след
 			if (item.type === 'folder') {
 				if (y < h * 0.4) tr.classList.add('drop-before');
 				else if (y > h * 0.6) tr.classList.add('drop-after');
@@ -581,13 +824,10 @@
 			const data = parseDragData(e);
 			clearDropIndicators();
 			if (!data || !data.id || data.id === item.id) return;
-
 			const rect = tr.getBoundingClientRect();
 			const y = e.clientY - rect.top;
 			const h = rect.height;
 			const currentFolderId = state.selectedFolderId;
-
-			// Средна зона на папка → премести ВЪТРЕ в нея
 			if (item.type === 'folder' && y >= h * 0.4 && y <= h * 0.6) {
 				moveNode(data.id, item.id);
 				state.expanded[item.id] = true;
@@ -595,33 +835,40 @@
 				renderTree();
 				return;
 			}
-
-			const insertBefore = (item.type === 'folder')
-				? (y < h * 0.4)
-				: (y < h / 2);
+			const insertBefore = (item.type === 'folder') ? (y < h * 0.4) : (y < h / 2);
 
 			function parentAndNext() {
 				if (showingSearch) {
 					const parent = findParent(item.id);
 					if (!parent) return null;
-					if (insertBefore) return { folderId: parent.id, beforeId: item.id };
+					if (insertBefore) return {
+						folderId: parent.id,
+						beforeId: item.id
+					};
 					const siblings = parent.children;
 					const idx = siblings.findIndex(c => c.id === item.id);
 					const next = idx >= 0 && idx + 1 < siblings.length ? siblings[idx + 1].id : null;
-					return { folderId: parent.id, beforeId: next };
+					return {
+						folderId: parent.id,
+						beforeId: next
+					};
 				}
-				if (insertBefore) return { folderId: currentFolderId, beforeId: item.id };
+				if (insertBefore) return {
+					folderId: currentFolderId,
+					beforeId: item.id
+				};
 				const folder = findNode(currentFolderId);
 				if (!folder) return null;
 				const idx = folder.children.findIndex(c => c.id === item.id);
 				const next = idx >= 0 && idx + 1 < folder.children.length ? folder.children[idx + 1].id : null;
-				return { folderId: currentFolderId, beforeId: next };
+				return {
+					folderId: currentFolderId,
+					beforeId: next
+				};
 			}
-
 			const dest = parentAndNext();
 			if (dest) moveNode(data.id, dest.folderId, dest.beforeId);
 		});
-
 		return tr;
 	}
 
@@ -643,28 +890,30 @@
 			e.preventDefault();
 			listPane.classList.remove('drag-over-pane');
 			clearDropIndicators();
-			if (e.target.closest('tr')) return; // handled by row
+			if (e.target.closest('tr')) return;
 			const data = parseDragData(e);
 			if (data && data.id && !state.searchTerm) {
 				moveNode(data.id, state.selectedFolderId);
 			}
 		});
 	}
-
 	// ------------------------------------------------------------
 	// Status / toolbar
 	// ------------------------------------------------------------
 	function updateStatus() {
 		const statusText = document.getElementById('statusText');
 		if (state.searchTerm) {
-			statusText.textContent = `Намерени резултати: ${searchAll(state.searchTerm).length}`;
+			statusText.textContent = t('statusResults') + searchAll(state.searchTerm).length;
 			return;
 		}
 		const folder = findNode(state.selectedFolderId);
-		if (!folder) { statusText.textContent = ''; return; }
+		if (!folder) {
+			statusText.textContent = '';
+			return;
+		}
 		const folders = folder.children.filter(c => c.type === 'folder').length;
 		const bms = folder.children.length - folders;
-		statusText.textContent = `${folder.title} — ${bms} отметки, ${folders} папки`;
+		statusText.textContent = `${folder.title}${t('statusFolder', bms, folders)}`;
 	}
 
 	function updateToolbarState() {
@@ -676,11 +925,10 @@
 
 	function updateThemeButton() {
 		const btn = document.getElementById('btnTheme');
-		const t = THEMES.find(x => x.id === state.theme) || THEMES[0];
-		btn.textContent = t.icon;
-		btn.title = `Тема: ${t.label} (клик за смяна)`;
+		const t_obj = THEMES.find(x => x.id === state.theme) || THEMES[0];
+		btn.textContent = t_obj.icon;
+		btn.title = `Тема: ${t_obj.label} (клик за смяна)`;
 	}
-
 	// ------------------------------------------------------------
 	// Modal
 	// ------------------------------------------------------------
@@ -688,30 +936,33 @@
 		document.getElementById('modalRoot').innerHTML = '';
 	}
 
-	function showModal({ title, fields = [], confirmLabel = 'ОК', onConfirm, message, danger = false, customBody }) {
+	function showModal({
+		title,
+		fields = [],
+		confirmLabel = 'ОК',
+		onConfirm,
+		message,
+		danger = false,
+		customBody
+	}) {
 		const modalRoot = document.getElementById('modalRoot');
 		modalRoot.innerHTML = '';
-
 		const backdrop = document.createElement('div');
 		backdrop.className = 'modal-backdrop';
 		const box = document.createElement('div');
 		box.className = 'modal-box';
-
 		const h3 = document.createElement('h3');
 		h3.textContent = title;
 		box.appendChild(h3);
-
 		if (message) {
 			const p = document.createElement('p');
 			p.className = 'msg';
 			p.textContent = message;
 			box.appendChild(p);
 		}
-
 		if (customBody) {
 			box.appendChild(customBody);
 		}
-
 		const inputs = {};
 		fields.forEach(f => {
 			const wrap = document.createElement('div');
@@ -727,12 +978,11 @@
 			box.appendChild(wrap);
 			inputs[f.name] = input;
 		});
-
 		const actions = document.createElement('div');
 		actions.className = 'modal-actions';
 		const cancelBtn = document.createElement('button');
 		cancelBtn.type = 'button';
-		cancelBtn.textContent = 'Отказ';
+		cancelBtn.textContent = t('modalCancel');
 		cancelBtn.addEventListener('click', closeModal);
 		const okBtn = document.createElement('button');
 		okBtn.type = 'button';
@@ -748,25 +998,29 @@
 		actions.appendChild(cancelBtn);
 		actions.appendChild(okBtn);
 		box.appendChild(actions);
-
 		backdrop.appendChild(box);
-		backdrop.addEventListener('click', e => { if (e.target === backdrop) closeModal(); });
+		backdrop.addEventListener('click', e => {
+			if (e.target === backdrop) closeModal();
+		});
 		modalRoot.appendChild(backdrop);
 
 		function keyHandler(e) {
-			if (e.key === 'Escape') { closeModal(); document.removeEventListener('keydown', keyHandler); }
+			if (e.key === 'Escape') {
+				closeModal();
+				document.removeEventListener('keydown', keyHandler);
+			}
 			if (e.key === 'Enter' && document.activeElement && document.activeElement.tagName === 'INPUT') {
 				confirmAction();
 			}
 		}
 		document.addEventListener('keydown', keyHandler);
-
 		const first = box.querySelector('input');
 		if (first) setTimeout(() => first.focus(), 30);
-
-		return { box, close: closeModal };
+		return {
+			box,
+			close: closeModal
+		};
 	}
-
 	// ------------------------------------------------------------
 	// Context menu
 	// ------------------------------------------------------------
@@ -798,53 +1052,99 @@
 			item.textContent = it.label;
 			item.setAttribute('role', 'menuitem');
 			if (!it.disabled) {
-				item.addEventListener('click', () => { closeContextMenu(); it.action(); });
+				item.addEventListener('click', () => {
+					closeContextMenu();
+					it.action();
+				});
 			}
 			menu.appendChild(item);
 		});
 		document.body.appendChild(menu);
-
 		const rect = menu.getBoundingClientRect();
-		let left = x, top = y;
+		let left = x,
+			top = y;
 		if (left + rect.width > window.innerWidth) left = Math.max(4, window.innerWidth - rect.width - 4);
 		if (top + rect.height > window.innerHeight) top = Math.max(4, window.innerHeight - rect.height - 4);
 		menu.style.left = left + 'px';
 		menu.style.top = top + 'px';
-
-		outsideCtxHandlerRef = e => { if (!menu.contains(e.target)) closeContextMenu(); };
+		outsideCtxHandlerRef = e => {
+			if (!menu.contains(e.target)) closeContextMenu();
+		};
 		setTimeout(() => document.addEventListener('mousedown', outsideCtxHandlerRef), 0);
 	}
 
 	function showTreeContextMenu(e, node) {
-		showContextMenu(e.clientX, e.clientY, [
-			{ label: '📁+ Нова папка', action: () => newFolder() },
-			{ label: '🔖+ Нова отметка', action: () => newBookmark() },
-			{ sep: true },
-			{ label: '✎ Преименувай', disabled: node.id === 'root', action: () => renameNode(node.id) },
-			{ label: '🗑 Изтрий', disabled: node.id === 'root', action: () => deleteNode(node.id) },
-			{ sep: true },
-			{ label: '🔗 Провери линковете в папката', action: () => checkLinksInFolder(node.id) },
-			{ label: '⇪ Експортирай папката', action: () => exportFolder(node.id) },
-		]);
+		showContextMenu(e.clientX, e.clientY, [{
+			label: t('ctxNewFolder'),
+			action: () => newFolder()
+		}, {
+			label: t('ctxNewBookmark'),
+			action: () => newBookmark()
+		}, {
+			sep: true
+		}, {
+			label: t('ctxRename'),
+			disabled: node.id === 'root',
+			action: () => renameNode(node.id)
+		}, {
+			label: t('ctxDelete'),
+			disabled: node.id === 'root',
+			action: () => deleteNode(node.id)
+		}, {
+			sep: true
+		}, {
+			label: t('ctxCheckLinks'),
+			action: () => checkLinksInFolder(node.id)
+		}, {
+			label: t('ctxExportFolder'),
+			action: () => exportFolder(node.id)
+		}, ]);
 	}
 
 	function showListContextMenu(e, item) {
 		const opts = [];
 		if (item.type === 'folder') {
-			opts.push({ label: 'Отвори', action: () => selectFolder(item.id) });
-			opts.push({ sep: true });
+			opts.push({
+				label: t('ctxOpen'),
+				action: () => selectFolder(item.id)
+			});
+			opts.push({
+				sep: true
+			});
 		}
 		if (item.type === 'bookmark') {
-			opts.push({ label: '📋 Копирай връзката', action: () => copyLink(item.url) });
-			opts.push({ label: '🔗 Провери връзката', action: () => checkSingleLink(item) });
-			opts.push({ sep: true });
+			opts.push({
+				label: t('ctxCopyLink'),
+				action: () => copyLink(item.url)
+			});
+			opts.push({
+				label: t('ctxCheckLink'),
+				action: () => checkSingleLink(item)
+			});
+			opts.push({
+				sep: true
+			});
 		}
-		opts.push({ label: '✎ Преименувай', action: () => renameNode(item.id) });
-		opts.push({ label: '🗑 Изтрий', action: () => deleteNode(item.id) });
+		opts.push({
+			label: t('ctxRename'),
+			action: () => renameNode(item.id)
+		});
+		opts.push({
+			label: t('ctxDelete'),
+			action: () => deleteNode(item.id)
+		});
 		if (item.type === 'folder') {
-			opts.push({ sep: true });
-			opts.push({ label: '🔗 Провери линковете в папката', action: () => checkLinksInFolder(item.id) });
-			opts.push({ label: '⇪ Експортирай папката', action: () => exportFolder(item.id) });
+			opts.push({
+				sep: true
+			});
+			opts.push({
+				label: t('ctxCheckLinks'),
+				action: () => checkLinksInFolder(item.id)
+			});
+			opts.push({
+				label: t('ctxExportFolder'),
+				action: () => exportFolder(item.id)
+			});
 		}
 		showContextMenu(e.clientX, e.clientY, opts);
 	}
@@ -855,8 +1155,10 @@
 			navigator.clipboard.writeText(url).then(() => {
 				const st = document.getElementById('statusText');
 				const prev = st.textContent;
-				st.textContent = 'Връзката е копирана.';
-				setTimeout(() => { st.textContent = prev; }, 1800);
+				st.textContent = t('statusCopied');
+				setTimeout(() => {
+					st.textContent = prev;
+				}, 1800);
 			}).catch(() => fallbackCopy(url));
 		} else {
 			fallbackCopy(url);
@@ -870,19 +1172,24 @@
 		ta.style.left = '-9999px';
 		document.body.appendChild(ta);
 		ta.select();
-		try { document.execCommand('copy'); } catch (e) { /* ignore */ }
+		try {
+			document.execCommand('copy');
+		} catch (e) {
+			/* ignore */
+		}
 		document.body.removeChild(ta);
 		const st = document.getElementById('statusText');
 		const prev = st.textContent;
-		st.textContent = 'Връзката е копирана.';
-		setTimeout(() => { st.textContent = prev; }, 1800);
+		st.textContent = t('statusCopied');
+		setTimeout(() => {
+			st.textContent = prev;
+		}, 1800);
 	}
-
 	// ------------------------------------------------------------
 	// Link checker
 	// ------------------------------------------------------------
 	function checkSingleLink(item) {
-		showCheckResultsModal([item], `Проверка: ${item.title}`);
+		showCheckResultsModal([item], `${t('checkLinksTitle')}: ${item.title}`);
 	}
 
 	function checkLinksInFolder(folderId) {
@@ -891,28 +1198,26 @@
 		const bms = collectBookmarks(folder);
 		if (!bms.length) {
 			showModal({
-				title: 'Проверка на линкове',
-				message: 'В тази папка (и подпапките ѝ) няма отметки.',
+				title: t('checkLinksTitle'),
+				message: t('checkLinksNoBookmarks'),
 				confirmLabel: 'ОК',
 				onConfirm: () => true
 			});
 			return;
 		}
-		showCheckResultsModal(bms, `Проверка на линкове — ${folder.title} (${bms.length})`);
+		showCheckResultsModal(bms, `${t('checkLinksTitle')} — ${folder.title} (${bms.length})`);
 	}
 
 	function showCheckResultsModal(bookmarks, title) {
 		const wrap = document.createElement('div');
 		const info = document.createElement('p');
 		info.className = 'msg';
-		info.textContent = 'Проверяват се връзките. Някои сайтове блокират CORS или зареждат бавно — таймаутът е ' + (LINK_CHECK_TIMEOUT_MS / 1000) + ' с. Резултат „неясен“ означава, че заявката е минала, но статусът не може да се прочете.';
+		info.textContent = t('checkLinksMsg', LINK_CHECK_TIMEOUT_MS / 1000);
 		wrap.appendChild(info);
-
 		const progress = document.createElement('p');
 		progress.className = 'msg';
-		progress.textContent = 'Изчакване…';
+		progress.textContent = t('checkLinksWait');
 		wrap.appendChild(progress);
-
 		const resultsDiv = document.createElement('div');
 		resultsDiv.className = 'check-results';
 		const table = document.createElement('table');
@@ -920,56 +1225,51 @@
 		table.appendChild(tbody);
 		resultsDiv.appendChild(table);
 		wrap.appendChild(resultsDiv);
-
 		const rows = {};
 		bookmarks.forEach(bm => {
 			const tr = document.createElement('tr');
-			tr.innerHTML =
-				`<td class="title-cell">${escapeHtml(bm.title)}</td>` +
-				`<td class="url-cell">${escapeHtml(bm.url || '')}</td>` +
-				`<td class="status-checking">…</td>`;
+			tr.innerHTML = `<td class="title-cell">${escapeHtml(bm.title)}</td>` + `<td class="url-cell">${escapeHtml(bm.url || '')}</td>` + `<td class="status-checking">…</td>`;
 			tbody.appendChild(tr);
 			rows[bm.id] = tr.lastElementChild;
 		});
-
 		showModal({
 			title,
 			customBody: wrap,
 			confirmLabel: 'Затвори',
 			onConfirm: () => true
 		});
-
 		runLinkChecks(bookmarks, (bm, result) => {
 			const cell = rows[bm.id];
 			if (!cell) return;
 			cell.className = '';
 			if (result.status === 'ok') {
 				cell.className = 'status-ok';
-				cell.textContent = result.code ? `OK (${result.code})` : 'OK';
+				cell.textContent = result.code ? `${t('checkStatusOk')} (${result.code})` : t('checkStatusOk');
 			} else if (result.status === 'fail') {
 				cell.className = 'status-fail';
-				cell.textContent = 'Неработеше' + (result.error ? `: ${result.error}` : '');
+				cell.textContent = t('checkStatusFail') + (result.error ? `: ${result.error}` : '');
 			} else if (result.status === 'timeout') {
 				cell.className = 'status-timeout';
-				cell.textContent = 'Таймаут';
+				cell.textContent = t('checkStatusTimeout');
 			} else {
 				cell.className = 'status-timeout';
-				cell.textContent = 'Неясен (CORS/opaque)';
+				cell.textContent = t('checkStatusUncertain');
 			}
 		}, (done, total) => {
-			progress.textContent = `Проверени ${done} / ${total}…`;
-			if (done >= total) progress.textContent = `Готово: ${total} връзки.`;
+			progress.textContent = t('checkLinksProgress', done, total);
+			if (done >= total) progress.textContent = t('checkLinksDone', total);
 		});
 	}
-
 	async function checkOneUrl(url) {
 		if (!url || !/^https?:\/\//i.test(url)) {
-			return { status: 'fail', error: 'невалиден URL' };
+			return {
+				status: 'fail',
+				error: t('checkStatusInvalid')
+			};
 		}
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
 		try {
-			// Първо опит с cors (ако сървърът позволява)
 			let res;
 			try {
 				res = await fetch(url, {
@@ -981,25 +1281,34 @@
 				});
 				clearTimeout(timer);
 				if (res.ok || (res.status >= 200 && res.status < 400)) {
-					return { status: 'ok', code: res.status };
+					return {
+						status: 'ok',
+						code: res.status
+					};
 				}
-				// някои сайтове не приемат HEAD
 				if (res.status === 405 || res.status === 501) {
 					return await checkOneUrlGet(url);
 				}
-				return { status: 'fail', code: res.status, error: 'HTTP ' + res.status };
+				return {
+					status: 'fail',
+					code: res.status,
+					error: 'HTTP ' + res.status
+				};
 			} catch (corsErr) {
-				// fallback no-cors
 				clearTimeout(timer);
 				return await checkOneUrlNoCors(url);
 			}
 		} catch (err) {
 			clearTimeout(timer);
-			if (err && err.name === 'AbortError') return { status: 'timeout' };
-			return { status: 'fail', error: (err && err.message) || 'грешка' };
+			if (err && err.name === 'AbortError') return {
+				status: 'timeout'
+			};
+			return {
+				status: 'fail',
+				error: (err && err.message) || t('checkStatusNetError')
+			};
 		}
 	}
-
 	async function checkOneUrlGet(url) {
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
@@ -1013,16 +1322,24 @@
 			});
 			clearTimeout(timer);
 			if (res.ok || (res.status >= 200 && res.status < 400)) {
-				return { status: 'ok', code: res.status };
+				return {
+					status: 'ok',
+					code: res.status
+				};
 			}
-			return { status: 'fail', code: res.status, error: 'HTTP ' + res.status };
+			return {
+				status: 'fail',
+				code: res.status,
+				error: 'HTTP ' + res.status
+			};
 		} catch (err) {
 			clearTimeout(timer);
-			if (err && err.name === 'AbortError') return { status: 'timeout' };
+			if (err && err.name === 'AbortError') return {
+				status: 'timeout'
+			};
 			return await checkOneUrlNoCors(url);
 		}
 	}
-
 	async function checkOneUrlNoCors(url) {
 		const controller = new AbortController();
 		const timer = setTimeout(() => controller.abort(), LINK_CHECK_TIMEOUT_MS);
@@ -1035,15 +1352,20 @@
 				cache: 'no-store',
 			});
 			clearTimeout(timer);
-			// opaque response — заявката е стигнала до мрежата
-			return { status: 'uncertain' };
+			return {
+				status: 'uncertain'
+			};
 		} catch (err) {
 			clearTimeout(timer);
-			if (err && err.name === 'AbortError') return { status: 'timeout' };
-			return { status: 'fail', error: (err && err.message) || 'мрежова грешка' };
+			if (err && err.name === 'AbortError') return {
+				status: 'timeout'
+			};
+			return {
+				status: 'fail',
+				error: (err && err.message) || t('checkStatusNetError')
+			};
 		}
 	}
-
 	async function runLinkChecks(bookmarks, onResult, onProgress) {
 		let done = 0;
 		const total = bookmarks.length;
@@ -1063,20 +1385,32 @@
 		}
 		await Promise.all(workers);
 	}
-
 	// ------------------------------------------------------------
 	// CRUD
 	// ------------------------------------------------------------
 	function newFolder() {
 		const parent = findNode(state.selectedFolderId) || root;
 		showModal({
-			title: 'Нова папка',
-			fields: [{ name: 'title', label: 'Име на папката', value: '' }],
-			confirmLabel: 'Създай',
+			title: t('modalNewFolder'),
+			fields: [{
+				name: 'title',
+				label: t('modalNewFolderLabel'),
+				value: ''
+			}],
+			confirmLabel: t('modalNewFolderConfirm'),
 			onConfirm: (v) => {
 				if (!v.title) return false;
-				parent.children.push({ id: uid(), type: 'folder', title: v.title, dateAdded: Date.now(), children: [] });
-				save(); renderTree(); renderList(); updateStatus();
+				parent.children.push({
+					id: uid(),
+					type: 'folder',
+					title: v.title,
+					dateAdded: Date.now(),
+					children: []
+				});
+				save();
+				renderTree();
+				renderList();
+				updateStatus();
 			}
 		});
 	}
@@ -1084,16 +1418,29 @@
 	function newBookmark() {
 		const parent = findNode(state.selectedFolderId) || root;
 		showModal({
-			title: 'Нова отметка',
-			fields: [
-				{ name: 'title', label: 'Заглавие', value: '' },
-				{ name: 'url', label: 'Адрес (URL)', value: 'https://' }
-			],
-			confirmLabel: 'Създай',
+			title: t('modalNewBookmark'),
+			fields: [{
+				name: 'title',
+				label: t('modalNewBookmarkLabelTitle'),
+				value: ''
+			}, {
+				name: 'url',
+				label: t('modalNewBookmarkLabelUrl'),
+				value: 'https://'
+			}],
+			confirmLabel: t('modalNewBookmarkConfirm'),
 			onConfirm: (v) => {
 				if (!v.title || !v.url) return false;
-				parent.children.push({ id: uid(), type: 'bookmark', title: v.title, url: v.url, dateAdded: Date.now() });
-				save(); renderList(); updateStatus();
+				parent.children.push({
+					id: uid(),
+					type: 'bookmark',
+					title: v.title,
+					url: v.url,
+					dateAdded: Date.now()
+				});
+				save();
+				renderList();
+				updateStatus();
 			}
 		});
 	}
@@ -1101,17 +1448,29 @@
 	function renameNode(id) {
 		const node = findNode(id);
 		if (!node || node.id === 'root') return;
-		const fields = [{ name: 'title', label: 'Име', value: node.title }];
-		if (node.type === 'bookmark') fields.push({ name: 'url', label: 'Адрес (URL)', value: node.url });
+		const fields = [{
+			name: 'title',
+			label: t('modalRenameLabelName'),
+			value: node.title
+		}];
+		if (node.type === 'bookmark') fields.push({
+			name: 'url',
+			label: t('modalRenameLabelUrl'),
+			value: node.url
+		});
 		showModal({
-			title: 'Преименувай',
+			title: t('modalRename'),
 			fields,
-			confirmLabel: 'Запази',
+			confirmLabel: t('modalRenameConfirm'),
 			onConfirm: (v) => {
 				if (!v.title) return false;
 				node.title = v.title;
 				if (node.type === 'bookmark' && v.url) node.url = v.url;
-				save(); renderTree(); renderBreadcrumb(); renderList(); updateStatus();
+				save();
+				renderTree();
+				renderBreadcrumb();
+				renderList();
+				updateStatus();
 			}
 		});
 	}
@@ -1122,21 +1481,24 @@
 		const parent = findParent(id);
 		if (!parent) return;
 		showModal({
-			title: 'Изтриване',
-			message: `Наистина ли искате да изтриете „${node.title}“?` +
-				(node.type === 'folder' && node.children.length ? ' Съдържанието на папката ще бъде изтрито заедно с нея.' : ''),
-			confirmLabel: 'Изтрий',
+			title: t('modalDelete'),
+			message: t('modalDeleteMsg', node.title) + (node.type === 'folder' && node.children.length ? t('modalDeleteFolderMsg') : ''),
+			confirmLabel: t('modalDeleteConfirm'),
 			danger: true,
 			onConfirm: () => {
 				parent.children = parent.children.filter(c => c.id !== id);
 				if (state.selectedFolderId === id) state.selectedFolderId = parent.id;
 				if (state.selectedItemId === id) state.selectedItemId = null;
-				save(); saveState();
-				renderTree(); renderBreadcrumb(); renderList(); updateStatus(); updateToolbarState();
+				save();
+				saveState();
+				renderTree();
+				renderBreadcrumb();
+				renderList();
+				updateStatus();
+				updateToolbarState();
 			}
 		});
 	}
-
 	// ------------------------------------------------------------
 	// Themes
 	// ------------------------------------------------------------
@@ -1169,7 +1531,6 @@
 			onConfirm: () => true
 		});
 	}
-
 	// ------------------------------------------------------------
 	// Import / export
 	// ------------------------------------------------------------
@@ -1187,14 +1548,21 @@
 			const h3 = dt.querySelector(':scope > h3');
 			const a = dt.querySelector(':scope > a');
 			if (h3) {
-				const sub = { id: uid(), type: 'folder', title: h3.textContent.trim() || 'Папка', dateAdded: parseDate(h3.getAttribute('add_date')), children: [] };
+				const sub = {
+					id: uid(),
+					type: 'folder',
+					title: h3.textContent.trim() || t('defaultFolder'),
+					dateAdded: parseDate(h3.getAttribute('add_date')),
+					children: []
+				};
 				const childDl = dt.querySelector(':scope > dl');
 				if (childDl) sub.children = parseDl(childDl);
 				result.push(sub);
 			} else if (a) {
 				result.push({
-					id: uid(), type: 'bookmark',
-					title: a.textContent.trim() || a.getAttribute('href') || 'Отметка',
+					id: uid(),
+					type: 'bookmark',
+					title: a.textContent.trim() || a.getAttribute('href') || t('defaultBookmark'),
 					url: a.getAttribute('href') || '#',
 					dateAdded: parseDate(a.getAttribute('add_date'))
 				});
@@ -1208,7 +1576,13 @@
 		const titleEl = doc.querySelector('title') || doc.querySelector('h1');
 		const name = (titleEl && titleEl.textContent.trim()) || filename.replace(/\.[^.]+$/, '');
 		const topDl = doc.querySelector('dl');
-		const folder = { id: uid(), type: 'folder', title: name, dateAdded: Date.now(), children: [] };
+		const folder = {
+			id: uid(),
+			type: 'folder',
+			title: name,
+			dateAdded: Date.now(),
+			children: []
+		};
 		if (topDl) folder.children = parseDl(topDl);
 		return folder;
 	}
@@ -1216,9 +1590,21 @@
 	function cloneNodes(nodes) {
 		return (nodes || []).map(n => {
 			if (n && n.type === 'folder') {
-				return { id: uid(), type: 'folder', title: n.title || 'Папка', dateAdded: n.dateAdded || Date.now(), children: cloneNodes(n.children) };
+				return {
+					id: uid(),
+					type: 'folder',
+					title: n.title || t('defaultFolder'),
+					dateAdded: n.dateAdded || Date.now(),
+					children: cloneNodes(n.children)
+				};
 			}
-			return { id: uid(), type: 'bookmark', title: (n && n.title) || 'Отметка', url: (n && n.url) || '#', dateAdded: (n && n.dateAdded) || Date.now() };
+			return {
+				id: uid(),
+				type: 'bookmark',
+				title: (n && n.title) || t('defaultBookmark'),
+				url: (n && n.url) || '#',
+				dateAdded: (n && n.dateAdded) || Date.now()
+			};
 		});
 	}
 
@@ -1228,8 +1614,14 @@
 		if (Array.isArray(data)) children = cloneNodes(data);
 		else if (data && data.children) children = cloneNodes(data.children);
 		else if (data && data.type === 'folder') children = cloneNodes([data]);
-		const name = (data && data.title) || filename.replace(/\.[^.]+$/, '') || 'Импорт';
-		return { id: uid(), type: 'folder', title: name, dateAdded: Date.now(), children };
+		const name = (data && data.title) || filename.replace(/\.[^.]+$/, '') || t('importFolder');
+		return {
+			id: uid(),
+			type: 'folder',
+			title: name,
+			dateAdded: Date.now(),
+			children
+		};
 	}
 
 	function handleImportFile(file) {
@@ -1251,11 +1643,11 @@
 				renderList();
 				updateStatus();
 				const st = document.getElementById('statusText');
-				st.textContent = `Импортирано: ${folder.title}`;
+				st.textContent = `${t('importFolder')}: ${folder.title}`;
 			} catch (err) {
 				showModal({
-					title: 'Грешка при импорт',
-					message: 'Файлът не можа да бъде прочетен. ' + (err && err.message ? err.message : ''),
+					title: t('importError'),
+					message: t('importErrorMsg') + (err && err.message ? err.message : ''),
 					confirmLabel: 'ОК',
 					onConfirm: () => true
 				});
@@ -1283,16 +1675,13 @@
 		} else {
 			body = nodeToNetscape(folderNode, '    ');
 		}
-		return `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n` +
-			`<!-- This is an automatically generated file. -->\n` +
-			`<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">\n` +
-			`<TITLE>Bookmarks</TITLE>\n` +
-			`<H1>Bookmarks</H1>\n` +
-			`<DL><p>\n${body}</DL><p>\n`;
+		return `<!DOCTYPE NETSCAPE-Bookmark-file-1>\n` + `<!-- This is an automatically generated file. -->\n` + `<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">\n` + `<TITLE>Bookmarks</TITLE>\n` + `<H1>Bookmarks</H1>\n` + `<DL><p>\n${body}</DL><p>\n`;
 	}
 
 	function downloadText(filename, text, mime) {
-		const blob = new Blob([text], { type: mime || 'text/plain;charset=utf-8' });
+		const blob = new Blob([text], {
+			type: mime || 'text/plain;charset=utf-8'
+		});
 		const url = URL.createObjectURL(blob);
 		const a = document.createElement('a');
 		a.href = url;
@@ -1300,7 +1689,7 @@
 		document.body.appendChild(a);
 		a.click();
 		document.body.removeChild(a);
-		setTimeout(() => URL.revokeObjectURL(url), 2000);
+		setTimeout(() => URL.revokeObjectURL(blob), 2000);
 	}
 
 	function exportFolder(id) {
@@ -1313,7 +1702,6 @@
 	function exportAll() {
 		downloadText('bookmarks-all.html', buildNetscapeFile(root), 'text/html;charset=utf-8');
 	}
-
 	// ------------------------------------------------------------
 	// Resizer
 	// ------------------------------------------------------------
@@ -1344,7 +1732,6 @@
 			}
 		});
 	}
-
 	// ------------------------------------------------------------
 	// Toolbar wiring
 	// ------------------------------------------------------------
@@ -1359,19 +1746,31 @@
 			const id = state.selectedItemId || (state.selectedFolderId !== 'root' ? state.selectedFolderId : null);
 			if (id) deleteNode(id);
 		});
-
 		document.getElementById('btnImport').addEventListener('click', () => document.getElementById('importInput').click());
 		document.getElementById('importInput').addEventListener('change', e => {
 			const file = e.target.files && e.target.files[0];
 			if (file) handleImportFile(file);
 			e.target.value = '';
 		});
-
 		document.getElementById('btnExport').addEventListener('click', () => exportFolder(state.selectedFolderId));
 		document.getElementById('btnExportAll').addEventListener('click', exportAll);
-
 		document.getElementById('btnTheme').addEventListener('click', showThemePicker);
-
+		// Language Selector
+		const btnLang = document.getElementById('btnLanguage');
+		const langMenu = document.getElementById('langMenu');
+		btnLang.addEventListener('click', e => {
+			e.stopPropagation();
+			langMenu.classList.toggle('hidden');
+		});
+		document.querySelectorAll('.lang-opt').forEach(opt => {
+			opt.addEventListener('click', () => {
+				state.lang = opt.dataset.lang;
+				saveState();
+				translateUI();
+				langMenu.classList.add('hidden');
+			});
+		});
+		document.addEventListener('click', () => langMenu.classList.add('hidden'));
 		let searchDebounce;
 		document.getElementById('searchInput').addEventListener('input', e => {
 			clearTimeout(searchDebounce);
@@ -1383,7 +1782,6 @@
 				updateStatus();
 			}, 120);
 		});
-
 		document.addEventListener('keydown', e => {
 			const tag = document.activeElement && document.activeElement.tagName;
 			if (tag === 'INPUT' || tag === 'TEXTAREA') return;
@@ -1399,18 +1797,16 @@
 		load();
 		applyTheme(state.theme);
 		document.getElementById('searchInput').value = state.searchTerm;
-
+		translateUI(); // Initial translation
 		renderTree();
 		renderBreadcrumb();
 		renderList();
 		updateStatus();
 		updateToolbarState();
-
 		initResizer();
 		wireToolbar();
 		wireListPaneDrop();
 		wireTreePaneDrop();
 	}
-
 	document.addEventListener('DOMContentLoaded', init);
 })();
