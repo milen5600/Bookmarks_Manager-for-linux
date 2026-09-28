@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Bookmark Manager</title>
+		<link rel="stylesheet" href="css/style.css" />
+	</head>
+
+	<body>
+		<div id="app">
+			<header id="toolbar">
+				<div class="toolbar-group">
+					<button id="btnNewFolder" class="tb-btn" title="Нова папка (в текущата папка)">📁+ Папка</button>
+					<button id="btnNewBookmark" class="tb-btn" title="Нова отметка (в текущата папка)">🔖+ Отметка</button>
+					<button id="btnRename" class="tb-btn" title="Преименувай избраното">✎ Преименувай</button>
+					<button id="btnDelete" class="tb-btn danger" title="Изтрий избраното">🗑 Изтрий</button>
+				</div>
+				<div class="toolbar-sep"></div>
+				<div class="toolbar-group">
+					<button id="btnImport" class="tb-btn" title="Импорт на bookmarks.html или .json">⭳ Импорт</button>
+					<button id="btnExport" class="tb-btn" title="Експорт на избраната папка">⭱ Експорт</button>
+					<button id="btnExportAll" class="tb-btn" title="Експорт на всички папки">⭱⭱ Всички</button>
+				</div>
+				<div class="toolbar-sep"></div>
+				<div class="toolbar-group grow">
+					<input id="searchInput" type="search" placeholder="Търсене в отметките…" autocomplete="off" />
+				</div>
+				<div class="toolbar-group">
+					<button id="btnTheme" class="tb-btn icon-only" title="Смяна на светла/тъмна тема">🌙</button>
+				</div>
+			</header>
+			<nav id="breadcrumb"></nav>
+			<div id="main">
+				<aside id="treePane">
+					<ul id="treeRoot" class="tree"></ul>
+				</aside>
+				<div id="resizer"></div>
+				<section id="listPane">
+					<table id="listTable">
+						<thead>
+							<tr>
+								<th class="col-name">Име</th>
+								<th class="col-url">Адрес</th>
+								<th class="col-date">Добавено</th>
+							</tr>
+						</thead>
+						<tbody id="listBody"></tbody>
+					</table>
+					<div id="emptyState" class="hidden">Няма елементи в тази папка.</div>
+				</section>
+			</div>
+			<footer id="statusBar"><span id="statusText"></span></footer>
+		</div>
+		<input type="file" id="importInput" accept=".html,.htm,.json" style="display:none" />
+		<div id="modalRoot"></div>
+		<script src="js/bookmarks.js"></script>
+	</body>
+
+</html>
