@@ -433,31 +433,12 @@ HTML + CSS + JavaScript
 
 ---
 
-## License
-
-Добавете тук избрания от автора лиценз.
-
-Пример:
-
-```text
-MIT License
-```
-
-или друг лиценз според намерението ви за разпространение.
-
----
-
 ## Screenshots
 
-> Добавете screenshots тук.
+> Add screenshots here.
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_001.png)
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_002.png)
 
-<!-- screenshot: main window -->
-
-<!-- screenshot: tree view -->
-
-<!-- screenshot: drag and drop -->
-
-<!-- screenshot: dark/light theme -->
 
 ---
 
