@@ -7,8 +7,7 @@ The basic idea is simple: manage bookmarks in a standalone application without h
 > **Status:** portable Linux desktop application  
 > **UI:** HTML/CSS/JavaScript  
 > **Desktop shell:** GTK3 + WebKit2GTK  
-> **Platform:** Linux x86_64  
-> **License:** add your chosen license
+> **Platform:** Linux x86_64
 
 ---
 
@@ -423,29 +422,12 @@ This keeps the application relatively simple and easy to maintain.
 
 ---
 
-## License
-
-Add the license selected by the author.
-
-For example:
-
-```text
-MIT License
-```
-
----
-
 ## Screenshots
 
 > Add screenshots here.
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_001.png)
+![](https://raw.githubusercontent.com/milen5600/Bookmarks_Manager-for-linux/refs/heads/main/Bookmark%20Manager_002.png)
 
-<!-- screenshot: main window -->
-
-<!-- screenshot: tree view -->
-
-<!-- screenshot: drag and drop -->
-
-<!-- screenshot: dark/light theme -->
 
 ---
 
