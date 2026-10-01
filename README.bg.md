@@ -1,3 +1,7 @@
+---
+title: Bookmark Manager
+date: 2026-10-01
+---
 # Bookmark Manager
 
 Лек, преносим графичен мениджър на отметки, за Linux, вдъхновен от **Bookmark Library / Bookmark Manager прозореца на Mozilla Firefox**.
